@@ -31,7 +31,6 @@
 #include "Wifi.h"
 #include "Platform.h"
 
-
 namespace NDS
 {
 
@@ -1611,10 +1610,7 @@ u8 ARM9Read8(u32 addr)
     case 0x08000000:
     case 0x09000000:
         if (ExMemCnt[0] & (1<<7)) return 0xFF; // TODO: proper open bus
-        //return *(u8*)&NDSCart::CartROM[addr & (NDSCart::CartROMSize-1)];
-        //printf("GBA read8 %08X\n", addr);
-        // TODO!!!
-        return 0xFF;
+        return GBACartHelper::RomRead8(addr);
 
     case 0x0A000000:
         if (ExMemCnt[0] & (1<<7)) return 0xFF; // TODO: proper open bus
@@ -1672,10 +1668,7 @@ u16 ARM9Read16(u32 addr)
     case 0x08000000:
     case 0x09000000:
         if (ExMemCnt[0] & (1<<7)) return 0xFFFF; // TODO: proper open bus
-        //return *(u8*)&NDSCart::CartROM[addr & (NDSCart::CartROMSize-1)];
-        //printf("GBA read8 %08X\n", addr);
-        // TODO!!!
-        return 0xFFFF;
+        return GBACartHelper::RomRead16(addr);
 
     case 0x0A000000:
         if (ExMemCnt[0] & (1<<7)) return 0xFFFF; // TODO: proper open bus
@@ -1733,10 +1726,7 @@ u32 ARM9Read32(u32 addr)
     case 0x08000000:
     case 0x09000000:
         if (ExMemCnt[0] & (1<<7)) return 0xFFFFFFFF; // TODO: proper open bus
-        //return *(u8*)&NDSCart::CartROM[addr & (NDSCart::CartROMSize-1)];
-        //printf("GBA read8 %08X\n", addr);
-        // TODO!!!
-        return 0xFFFFFFFF;
+       return GBACartHelper::RomRead32(addr);
 
     case 0x0A000000:
         if (ExMemCnt[0] & (1<<7)) return 0xFFFFFFFF; // TODO: proper open bus
@@ -1771,6 +1761,11 @@ void ARM9Write8(u32 addr, u8 val)
     case 0x06000000:
     case 0x07000000:
         // checkme
+        return;
+
+    case 0x08000000:
+    case 0x09000000:
+        GBACartHelper::RomWrite8(addr, val);
         return;
     }
 
@@ -1815,6 +1810,11 @@ void ARM9Write16(u32 addr, u16 val)
         if (!(PowerControl9 & ((addr & 0x400) ? (1<<9) : (1<<1)))) return;
         *(u16*)&GPU::OAM[addr & 0x7FF] = val;
         return;
+
+    case 0x08000000:
+    case 0x09000000:
+        GBACartHelper::RomWrite16(addr, val);
+        return;
     }
 
     //printf("unknown arm9 write16 %08X %04X\n", addr, val);
@@ -1857,6 +1857,11 @@ void ARM9Write32(u32 addr, u32 val)
     case 0x07000000:
         if (!(PowerControl9 & ((addr & 0x400) ? (1<<9) : (1<<1)))) return;
         *(u32*)&GPU::OAM[addr & 0x7FF] = val;
+        return;
+
+    case 0x08000000:
+    case 0x09000000:
+        GBACartHelper::RomWrite32(addr, val);
         return;
     }
 
@@ -1934,12 +1939,11 @@ u8 ARM7Read8(u32 addr)
         return GPU::ReadVRAM_ARM7<u8>(addr);
 
     case 0x08000000:
+    case 0x08800000:
     case 0x09000000:
+    case 0x09800000:
         if (!(ExMemCnt[0] & (1<<7))) return 0xFF; // TODO: proper open bus
-        //return *(u8*)&NDSCart::CartROM[addr & (NDSCart::CartROMSize-1)];
-        //printf("GBA read8 %08X\n", addr);
-        // TODO!!!
-        return 0xFF;
+        return GBACartHelper::RomRead8(addr);
 
     case 0x0A000000:
         if (!(ExMemCnt[0] & (1<<7))) return 0xFF; // TODO: proper open bus
@@ -1997,12 +2001,11 @@ u16 ARM7Read16(u32 addr)
         return GPU::ReadVRAM_ARM7<u16>(addr);
 
     case 0x08000000:
+    case 0x08800000:
     case 0x09000000:
+    case 0x09800000:
         if (!(ExMemCnt[0] & (1<<7))) return 0xFFFF; // TODO: proper open bus
-        //return *(u8*)&NDSCart::CartROM[addr & (NDSCart::CartROMSize-1)];
-        //printf("GBA read8 %08X\n", addr);
-        // TODO!!!
-        return 0xFFFF;
+        return GBACartHelper::RomRead16(addr);
 
     case 0x0A000000:
         if (!(ExMemCnt[0] & (1<<7))) return 0xFFFF; // TODO: proper open bus
@@ -2060,12 +2063,11 @@ u32 ARM7Read32(u32 addr)
         return GPU::ReadVRAM_ARM7<u32>(addr);
 
     case 0x08000000:
+    case 0x08800000:
     case 0x09000000:
+    case 0x09800000:
         if (!(ExMemCnt[0] & (1<<7))) return 0xFFFFFFFF; // TODO: proper open bus
-        //return *(u8*)&NDSCart::CartROM[addr & (NDSCart::CartROMSize-1)];
-        //printf("GBA read8 %08X\n", addr);
-        // TODO!!!
-        return 0xFFFFFFFF;
+        return GBACartHelper::RomRead32(addr);
 
     case 0x0A000000:
         if (!(ExMemCnt[0] & (1<<7))) return 0xFFFFFFFF; // TODO: proper open bus
@@ -2109,6 +2111,13 @@ void ARM7Write8(u32 addr, u8 val)
     case 0x06000000:
     case 0x06800000:
         GPU::WriteVRAM_ARM7<u8>(addr, val);
+        return;
+
+    case 0x08000000:
+    case 0x08800000:
+    case 0x09000000:
+    case 0x09800000:
+        GBACartHelper::RomWrite8(addr, val);
         return;
     }
 
@@ -2156,6 +2165,13 @@ void ARM7Write16(u32 addr, u16 val)
     case 0x06800000:
         GPU::WriteVRAM_ARM7<u16>(addr, val);
         return;
+
+    case 0x08000000:
+    case 0x08800000:
+    case 0x09000000:
+    case 0x09800000:
+        GBACartHelper::RomWrite16(addr, val);
+        return;
     }
 
     //printf("unknown arm7 write16 %08X %04X @ %08X\n", addr, val, ARM7->R[15]);
@@ -2202,6 +2218,13 @@ void ARM7Write32(u32 addr, u32 val)
     case 0x06000000:
     case 0x06800000:
         GPU::WriteVRAM_ARM7<u32>(addr, val);
+        return;
+
+    case 0x08000000:
+    case 0x08800000:
+    case 0x09000000:
+    case 0x09800000:
+        GBACartHelper::RomWrite32(addr, val);
         return;
     }
 
@@ -2270,6 +2293,8 @@ u8 ARM9IORead8(u32 addr)
 {
     switch (addr)
     {
+    case 0x04000006: return GPU::VCount;
+
     case 0x04000130: return KeyInput & 0xFF;
     case 0x04000131: return (KeyInput >> 8) & 0xFF;
     case 0x04000132: return KeyCnt & 0xFF;
@@ -2493,6 +2518,7 @@ u32 ARM9IORead32(u32 addr)
     case 0x04000130: return (KeyInput & 0xFFFF) | (KeyCnt << 16);
 
     case 0x04000180: return IPCSync9;
+    case 0x04000184: return ARM9IORead16(addr);
 
     case 0x040001A0: return NDSCart::SPICnt | (NDSCart::ReadSPIData() << 16);
     case 0x040001A4: return NDSCart::ROMCnt;
@@ -2871,6 +2897,7 @@ void ARM9IOWrite32(u32 addr, u32 val)
         KeyCnt = val >> 16;
         return;
     case 0x04000180:
+    case 0x04000184:
         ARM9IOWrite16(addr, val);
         return;
 
@@ -2979,6 +3006,8 @@ u8 ARM7IORead8(u32 addr)
 {
     switch (addr)
     {
+    case 0x04000006: return GPU::VCount;
+
     case 0x04000130: return KeyInput & 0xFF;
     case 0x04000131: return (KeyInput >> 8) & 0xFF;
     case 0x04000132: return KeyCnt & 0xFF;
@@ -3128,6 +3157,7 @@ u32 ARM7IORead32(u32 addr)
     case 0x04000138: return RTC::Read();
 
     case 0x04000180: return IPCSync7;
+    case 0x04000184: return ARM7IORead16(addr);
 
     case 0x040001A0: return NDSCart::SPICnt | (NDSCart::ReadSPIData() << 16);
     case 0x040001A4: return NDSCart::ROMCnt;
@@ -3428,6 +3458,7 @@ void ARM7IOWrite32(u32 addr, u32 val)
     case 0x04000138: RTC::Write(val & 0xFFFF, false); return;
 
     case 0x04000180:
+    case 0x04000184:
         ARM7IOWrite16(addr, val);
         return;
     case 0x04000188:

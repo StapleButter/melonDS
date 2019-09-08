@@ -35,6 +35,8 @@ enum
 namespace Config
 {
 
+extern const char *Slot2Types[];
+
 extern int KeyMapping[12];
 extern int JoyMapping[12];
 
@@ -74,6 +76,9 @@ extern int MicInputType;
 extern char MicWavPath[512];
 
 extern char LastROMFolder[512];
+
+extern int Slot2Type;
+extern char Slot2DiskImagePath[512];
 
 }
 

@@ -36,6 +36,7 @@
 #include "DlgVideoSettings.h"
 #include "DlgAudioSettings.h"
 #include "DlgWifiSettings.h"
+#include "DlgSlot2Settings.h"
 
 #include "../NDS.h"
 #include "../GPU.h"
@@ -48,6 +49,7 @@
 
 #include "OSD.h"
 
+#include "../slot2/GBACart.h"
 
 // savestate slot mapping
 // 1-8: regular slots (quick access)
@@ -1564,6 +1566,18 @@ void OnAreaResize(uiAreaHandler* handler, uiArea* area, int width, int height)
 }
 
 
+void LoadSlot2Cart()
+{
+    GBACartConfig config = {
+        Config::Slot2Type,
+        NULL,
+        Config::Slot2DiskImagePath
+    };
+
+    GBACartHelper::Init(config);
+}
+
+
 void Run()
 {
     EmuRunning = 1;
@@ -1571,6 +1585,7 @@ void Run()
 
     SPU::InitOutput();
     AudioSampleFrac = 0;
+
     SDL_PauseAudioDevice(AudioDevice, 0);
     SDL_PauseAudioDevice(MicDevice, 0);
 
@@ -1648,6 +1663,7 @@ void Reset(void* blarg)
         NDS::LoadROM(ROMPath, SRAMPath, Config::DirectBoot);
     }
 
+    LoadSlot2Cart();
     Run();
 
     OSD::AddMessage(0, "Reset");
@@ -1927,6 +1943,7 @@ void CloseAllDialogs()
     DlgEmuSettings::Close();
     DlgInputConfig::Close(0);
     DlgInputConfig::Close(1);
+    DlgSlot2Settings::Close();
     DlgVideoSettings::Close();
     DlgWifiSettings::Close();
 }
@@ -2076,6 +2093,11 @@ void OnOpenAudioSettings(uiMenuItem* item, uiWindow* window, void* blarg)
 void OnOpenWifiSettings(uiMenuItem* item, uiWindow* window, void* blarg)
 {
     DlgWifiSettings::Open();
+}
+
+void OnOpenSlot2Settings(uiMenuItem* item, uiWindow* window, void* blarg)
+{
+    DlgSlot2Settings::Open();
 }
 
 
@@ -2317,6 +2339,10 @@ void ApplyNewSettings(int type)
             // TODO eventually: VSync for non-GL screen?
         }
     }*/
+    else if (type == 5) // slot 2
+    {
+        LoadSlot2Cart();
+    }
 
     EmuRunning = prevstatus;
 }
@@ -2404,6 +2430,11 @@ void CreateMainWindowMenu()
         uiMenuItemOnClicked(menuitem, OnOpenAudioSettings, NULL);
         menuitem = uiMenuAppendItem(menu, "Wifi settings");
         uiMenuItemOnClicked(menuitem, OnOpenWifiSettings, NULL);
+    }
+    uiMenuAppendSeparator(menu);
+    {
+        menuitem = uiMenuAppendItem(menu, "Slot-2 (GBA) settings");
+        uiMenuItemOnClicked(menuitem, OnOpenSlot2Settings, NULL);
     }
     uiMenuAppendSeparator(menu);
     {
@@ -2805,6 +2836,7 @@ int main(int argc, char** argv)
             ROMPath[1023] = '\0';
 
             SetupSRAMPath();
+            LoadSlot2Cart();
 
             if (NDS::LoadROM(ROMPath, SRAMPath, Config::DirectBoot))
                 Run();

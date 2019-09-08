@@ -19,6 +19,7 @@
 #ifndef NDS_H
 #define NDS_H
 
+#include "slot2/GBACart.h"
 #include "Savestate.h"
 #include "types.h"
 
