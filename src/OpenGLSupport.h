@@ -48,7 +48,7 @@
 
 #define LOADPROC(type, name)  \
     name = (PFN##type##PROC)Platform::GL_GetProcAddress(#name); \
-    if (!name) { printf("OpenGL: " #name " not found\n"); return false; }
+    if (!name) { Platform::LogMessage("OpenGL: " #name " not found\n"); return false; }
 
 
 // if you need more OpenGL functions, add them to the macronator here

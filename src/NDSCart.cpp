@@ -88,8 +88,8 @@ void DoSavestate(Savestate* file)
     file->Var32(&SRAMLength);
     if (SRAMLength != oldlen)
     {
-        printf("savestate: VERY BAD!!!! SRAM LENGTH DIFFERENT. %d -> %d\n", oldlen, SRAMLength);
-        printf("oh well. loading it anyway. adsfgdsf\n");
+        Platform::LogMessage("savestate: VERY BAD!!!! SRAM LENGTH DIFFERENT. %d -> %d\n", oldlen, SRAMLength);
+        Platform::LogMessage("oh well. loading it anyway. adsfgdsf\n");
 
         if (oldlen) delete[] SRAM;
         if (SRAMLength) SRAM = new u8[SRAMLength];
@@ -159,7 +159,7 @@ void LoadSave(const char* path, u32 type)
     case 8192*1024: WriteFunc = Write_Flash; break;
     case 32768*1024: WriteFunc = Write_Null; break; // NAND FLASH, handled differently
     default:
-        printf("!! BAD SAVE LENGTH %d\n", SRAMLength);
+        Platform::LogMessage("!! BAD SAVE LENGTH %d\n", SRAMLength);
     case 0:
         WriteFunc = Write_Null;
         break;
@@ -185,7 +185,7 @@ void RelocateSave(const char* path, bool write)
     FILE* f = Platform::OpenFile(path, "wb");
     if (!f)
     {
-        printf("NDSCart_SRAM::RelocateSave: failed to create new file. fuck\n");
+        Platform::LogMessage("NDSCart_SRAM::RelocateSave: failed to create new file. fuck\n");
         return;
     }
 
@@ -238,7 +238,7 @@ void Write_EEPROMTiny(u8 val, bool islast)
 
     default:
         if (DataPos==0)
-            printf("unknown tiny EEPROM save command %02X\n", CurCmd);
+            Platform::LogMessage("unknown tiny EEPROM save command %02X\n", CurCmd);
         break;
     }
 }
@@ -284,7 +284,7 @@ void Write_EEPROM(u8 val, bool islast)
 
     default:
         if (DataPos==0)
-            printf("unknown EEPROM save command %02X\n", CurCmd);
+            Platform::LogMessage("unknown EEPROM save command %02X\n", CurCmd);
         break;
     }
 }
@@ -375,7 +375,7 @@ void Write_Flash(u8 val, bool islast)
 
     default:
         if (DataPos==0)
-            printf("unknown Flash save command %02X\n", CurCmd);
+            Platform::LogMessage("unknown Flash save command %02X\n", CurCmd);
         break;
     }
 }
@@ -398,7 +398,7 @@ void Write(u8 val, u32 hold)
         Data = 0;
         DataPos = 0;
         Addr = 0;
-        //printf("save SPI command %02X\n", CurCmd);
+        //Platform::LogMessage("save SPI command %02X\n", CurCmd);
         return;
     }
 
@@ -443,7 +443,7 @@ void Write(u8 val, u32 hold)
 
     default:
         if (DataPos==0)
-            printf("unknown save SPI command %02X %02X %d\n", CurCmd, val, islast);
+            Platform::LogMessage("unknown save SPI command %02X %02X %d\n", CurCmd, val, islast);
         break;
     }
 
@@ -711,26 +711,26 @@ void ApplyDLDIPatch(const u8* patch, u32 len)
         return;
     }
 
-    printf("DLDI structure found at %08X (%08X)\n", dldioffset, offset+dldioffset);
+    Platform::LogMessage("DLDI structure found at %08X (%08X)\n", dldioffset, offset+dldioffset);
 
     if (*(u32*)&patch[0] != 0xBF8DA5ED ||
         *(u32*)&patch[4] != 0x69684320 ||
         *(u32*)&patch[8] != 0x006D6873)
     {
-        printf("bad DLDI patch\n");
+        Platform::LogMessage("bad DLDI patch\n");
         delete[] patch;
         return;
     }
 
     if (patch[0x0D] > binary[dldioffset+0x0F])
     {
-        printf("DLDI driver ain't gonna fit, sorry\n");
+        Platform::LogMessage("DLDI driver ain't gonna fit, sorry\n");
         delete[] patch;
         return;
     }
 
-    printf("existing driver is: %s\n", &binary[dldioffset+0x10]);
-    printf("new driver is: %s\n", &patch[0x10]);
+    Platform::LogMessage("existing driver is: %s\n", &binary[dldioffset+0x10]);
+    Platform::LogMessage("new driver is: %s\n", &patch[0x10]);
 
     u32 memaddr = *(u32*)&binary[dldioffset+0x40];
     if (memaddr == 0)
@@ -806,7 +806,7 @@ void ApplyDLDIPatch(const u8* patch, u32 len)
         memset(&binary[dldioffset+fixstart], 0, fixend-fixstart);
     }
 
-    printf("applied DLDI patch\n");
+    Platform::LogMessage("applied DLDI patch\n");
 }
 
 
@@ -873,13 +873,13 @@ void DecryptSecureArea(u8* out)
 
     if (!strncmp((const char*)out, "encryObj", 8))
     {
-        printf("Secure area decryption OK\n");
+        Platform::LogMessage("Secure area decryption OK\n");
         *(u32*)&out[0] = 0xE7FFDEFF;
         *(u32*)&out[4] = 0xE7FFDEFF;
     }
     else
     {
-        printf("Secure area decryption failed\n");
+        Platform::LogMessage("Secure area decryption failed\n");
         for (u32 i = 0; i < 0x800; i += 4)
             *(u32*)&out[i] = 0xE7FFDEFF;
     }
@@ -910,7 +910,7 @@ bool LoadROM(const char* path, const char* sram, bool direct)
     u32 gamecode;
     fseek(f, 0x0C, SEEK_SET);
     fread(&gamecode, 4, 1, f);
-    printf("Game code: %c%c%c%c\n", gamecode&0xFF, (gamecode>>8)&0xFF, (gamecode>>16)&0xFF, gamecode>>24);
+    Platform::LogMessage("Game code: %c%c%c%c\n", gamecode&0xFF, (gamecode>>8)&0xFF, (gamecode>>16)&0xFF, gamecode>>24);
 
     u8 unitcode;
     fseek(f, 0x12, SEEK_SET);
@@ -929,7 +929,7 @@ bool LoadROM(const char* path, const char* sram, bool direct)
     if (!ReadROMParams(gamecode, &romparams))
     {
         // set defaults
-        printf("ROM entry not found\n");
+        Platform::LogMessage("ROM entry not found\n");
 
         romparams.GameCode = gamecode;
         romparams.ROMSize = CartROMSize;
@@ -939,9 +939,9 @@ bool LoadROM(const char* path, const char* sram, bool direct)
             romparams.SaveMemType = 2; // assume EEPROM 64k (TODO FIXME)
     }
     else
-        printf("ROM entry: %08X %08X\n", romparams.ROMSize, romparams.SaveMemType);
+        Platform::LogMessage("ROM entry: %08X %08X\n", romparams.ROMSize, romparams.SaveMemType);
 
-    if (romparams.ROMSize != len) printf("!! bad ROM size %d (expected %d) rounded to %d\n", len, romparams.ROMSize, CartROMSize);
+    if (romparams.ROMSize != len) Platform::LogMessage("!! bad ROM size %d (expected %d) rounded to %d\n", len, romparams.ROMSize, CartROMSize);
 
     // generate a ROM ID
     // note: most games don't check the actual value
@@ -959,7 +959,7 @@ bool LoadROM(const char* path, const char* sram, bool direct)
     if (CartIsDSi)
         CartID |= 0x40000000;
 
-    printf("Cart ID: %08X\n", CartID);
+    Platform::LogMessage("Cart ID: %08X\n", CartID);
 
     u32 arm9base = *(u32*)&CartROM[0x20];
 
@@ -970,7 +970,7 @@ bool LoadROM(const char* path, const char* sram, bool direct)
             // reencrypt secure area if needed
             if (*(u32*)&CartROM[arm9base] == 0xE7FFDEFF && *(u32*)&CartROM[arm9base+0x10] != 0xE7FFDEFF)
             {
-                printf("Re-encrypting cart secure area\n");
+                Platform::LogMessage("Re-encrypting cart secure area\n");
 
                 strncpy((char*)&CartROM[arm9base], "encryObj", 8);
 
@@ -1013,7 +1013,7 @@ bool LoadROM(const char* path, const char* sram, bool direct)
     Key1_InitKeycode(false, gamecode, 2, 2);
 
     // save
-    printf("Save file: %s\n", sram);
+    Platform::LogMessage("Save file: %s\n", sram);
     NDSCart_SRAM::LoadSave(sram, romparams.SaveMemType);
 
     if (CartIsHomebrew && Config::DLDIEnable)
@@ -1172,7 +1172,7 @@ void ROMCommand_Retail(u8* cmd)
         break;
 
     default:
-        printf("unknown retail cart command %02X\n", cmd[0]);
+        Platform::LogMessage("unknown retail cart command %02X\n", cmd[0]);
         break;
     }
 }
@@ -1227,7 +1227,7 @@ void ROMCommand_RetailNAND(u8* cmd)
         break;
 
     default:
-        printf("unknown NAND command %02X %04Xn", cmd[0], TransferLen);
+        Platform::LogMessage("unknown NAND command %02X %04Xn", cmd[0], TransferLen);
         break;
     }
 }
@@ -1273,7 +1273,7 @@ void ROMCommand_Homebrew(u8* cmd)
         break;
 
     default:
-        printf("unknown homebrew cart command %02X\n", cmd[0]);
+        Platform::LogMessage("unknown homebrew cart command %02X\n", cmd[0]);
         break;
     }
 }
@@ -1299,10 +1299,10 @@ void WriteROMCnt(u32 val)
             if (seed1 & (1ULL << i)) Key2_Y |= (1ULL << (38-i));
         }
 
-        printf("seed0: %02X%08X\n", (u32)(seed0>>32), (u32)seed0);
-        printf("seed1: %02X%08X\n", (u32)(seed1>>32), (u32)seed1);
-        printf("key2 X: %02X%08X\n", (u32)(Key2_X>>32), (u32)Key2_X);
-        printf("key2 Y: %02X%08X\n", (u32)(Key2_Y>>32), (u32)Key2_Y);
+        Platform::LogMessage("seed0: %02X%08X\n", (u32)(seed0>>32), (u32)seed0);
+        Platform::LogMessage("seed1: %02X%08X\n", (u32)(seed1>>32), (u32)seed1);
+        Platform::LogMessage("key2 X: %02X%08X\n", (u32)(Key2_X>>32), (u32)Key2_X);
+        Platform::LogMessage("key2 Y: %02X%08X\n", (u32)(Key2_Y>>32), (u32)Key2_Y);
     }
 
     if (!(ROMCnt & (1<<31))) return;
@@ -1334,7 +1334,7 @@ void WriteROMCnt(u32 val)
         *(u32*)&cmd[4] = *(u32*)&ROMCommand[4];
     }
 
-    /*printf("ROM COMMAND %04X %08X %02X%02X%02X%02X%02X%02X%02X%02X SIZE %04X\n",
+    /*Platform::LogMessage("ROM COMMAND %04X %08X %02X%02X%02X%02X%02X%02X%02X%02X SIZE %04X\n",
            SPICnt, ROMCnt,
            cmd[0], cmd[1], cmd[2], cmd[3],
            cmd[4], cmd[5], cmd[6], cmd[7],
@@ -1498,7 +1498,7 @@ void WriteSPICnt(u16 val)
 {
     SPICnt = (SPICnt & 0x0080) | (val & 0xE043);
     if (SPICnt & (1<<7))
-        printf("!! CHANGING AUXSPICNT DURING TRANSFER: %04X\n", val);
+        Platform::LogMessage("!! CHANGING AUXSPICNT DURING TRANSFER: %04X\n", val);
 }
 
 void SPITransferDone(u32 param)
@@ -1520,7 +1520,7 @@ void WriteSPIData(u8 val)
     if (!(SPICnt & (1<<15))) return;
     if (!(SPICnt & (1<<13))) return;
 
-    if (SPICnt & (1<<7)) printf("!! WRITING AUXSPIDATA DURING PENDING TRANSFER\n");
+    if (SPICnt & (1<<7)) Platform::LogMessage("!! WRITING AUXSPIDATA DURING PENDING TRANSFER\n");
 
     SPICnt |= (1<<7);
     NDSCart_SRAM::Write(val, SPICnt&(1<<6));

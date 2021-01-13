@@ -13,6 +13,7 @@
 #include "Arm64Emitter.h"
 #include "BitUtils.h"
 #include "../types.h"
+#include "../Platform.h"
 #include "MathUtil.h"
 
 #ifdef __APPLE__

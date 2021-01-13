@@ -90,6 +90,9 @@ extern char RecentROMList[10][1024];
 
 extern int EnableCheats;
 
+extern int LogToFile;
+extern char LogFileLocation[1024];
+
 }
 
 #endif // PLATFORMCONFIG_H

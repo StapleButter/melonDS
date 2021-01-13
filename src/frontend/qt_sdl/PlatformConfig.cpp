@@ -76,6 +76,9 @@ char RecentROMList[10][1024];
 
 int EnableCheats;
 
+int LogToFile;
+char LogFileLocation[1024];
+
 bool EnableJIT;
 
 ConfigEntry PlatformConfigFile[] =
@@ -181,6 +184,9 @@ ConfigEntry PlatformConfigFile[] =
 
     {"EnableCheats", 0, &EnableCheats, 0, NULL, 0},
 
+    {"LogToFile", 0, &LogToFile, 0, NULL, 0},
+    {"LogFileLocation", 1, &LogFileLocation, 0, "", 1023},
+    
     {"", -1, NULL, 0, NULL, 0}
 };
 

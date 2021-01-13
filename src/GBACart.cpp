@@ -176,7 +176,7 @@ void LoadSave(const char* path)
         WriteFunc = Write_Flash;
         break;
     default:
-        printf("!! BAD SAVE LENGTH %d\n", SRAMLength);
+        Platform::LogMessage("!! BAD SAVE LENGTH %d\n", SRAMLength);
     case 0:
         SRAMType = S_NULL;
         WriteFunc = Write_Null;
@@ -211,7 +211,7 @@ void RelocateSave(const char* path, bool write)
     FILE *f = Platform::OpenFile(path, "r+b");
     if (!f)
     {
-        printf("GBACart_SRAM::RelocateSave: failed to create new file. fuck\n");
+        Platform::LogMessage("GBACart_SRAM::RelocateSave: failed to create new file. fuck\n");
         return;
     }
 
@@ -242,7 +242,7 @@ u8 Read_Flash(u32 addr)
         case 0xB0: // bank switching (128K only)
             break; // ignore here, handled in Write_Flash()
         default:
-            printf("GBACart_SRAM::Read_Flash: unknown command 0x%02X @ 0x%04X\n", SRAMFlashState.cmd, addr);
+            Platform::LogMessage("GBACart_SRAM::Read_Flash: unknown command 0x%02X @ 0x%04X\n", SRAMFlashState.cmd, addr);
             break;
     }
 
@@ -386,7 +386,7 @@ void Write_Flash(u32 addr, u8 val)
         return;
     }
 
-    printf("GBACart_SRAM::Write_Flash: unknown write 0x%02X @ 0x%04X (state: 0x%02X)\n",
+    Platform::LogMessage("GBACart_SRAM::Write_Flash: unknown write 0x%02X @ 0x%04X (state: 0x%02X)\n",
         val, addr, SRAMFlashState.state);
 }
 
@@ -643,7 +643,7 @@ bool LoadROM(const char* path, const char* sram)
     char gamecode[5] = { '\0' };
     fseek(f, 0xAC, SEEK_SET);
     fread(&gamecode, 1, 4, f);
-    printf("Game code: %s\n", gamecode);
+    Platform::LogMessage("Game code: %s\n", gamecode);
 
     for (int i = 0; i < sizeof(SOLAR_SENSOR_GAMECODES)/sizeof(SOLAR_SENSOR_GAMECODES[0]); i++)
     {
@@ -652,7 +652,7 @@ bool LoadROM(const char* path, const char* sram)
 
     if (HasSolarSensor)
     {
-        printf("GBA solar sensor support detected!\n");
+        Platform::LogMessage("GBA solar sensor support detected!\n");
     }
 
     CartROM = new u8[CartROMSize];
@@ -663,12 +663,12 @@ bool LoadROM(const char* path, const char* sram)
     fclose(f);
 
     CartCRC = CRC32(CartROM, CartROMSize);
-    printf("ROM CRC32: %08X\n", CartCRC);
+    Platform::LogMessage("ROM CRC32: %08X\n", CartCRC);
 
     CartInserted = true;
 
     // save
-    printf("Save file: %s\n", sram);
+    Platform::LogMessage("Save file: %s\n", sram);
     GBACart_SRAM::LoadSave(sram);
 
     return true;
@@ -697,7 +697,7 @@ void WriteGPIO(u32 addr, u16 val)
             CartGPIO.control = val;
             break;
         default:
-            printf("Unknown GBA GPIO write 0x%02X @ 0x%04X\n", val, addr);
+            Platform::LogMessage("Unknown GBA GPIO write 0x%02X @ 0x%04X\n", val, addr);
     }
 
     // write the GPIO values in the ROM (if writable)
@@ -757,7 +757,7 @@ void Process(GBACart::GPIO* gpio)
         u8 prev = LightSample;
         LightCounter = 0;
         LightSample = LIGHT_VALUE;
-        printf("Solar sensor reset (sample: 0x%02X -> 0x%02X)\n", prev, LightSample);
+        Platform::LogMessage("Solar sensor reset (sample: 0x%02X -> 0x%02X)\n", prev, LightSample);
     }
     if (gpio->data & 1 && LightEdge) LightCounter++;
 

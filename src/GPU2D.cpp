@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "Platform.h"
 #include "NDS.h"
 #include "GPU.h"
 
@@ -223,7 +224,7 @@ u8 GPU2D::Read8(u32 addr)
     case 0x04D: return 0;
     }
 
-    printf("unknown GPU read8 %08X\n", addr);
+    Platform::LogMessage("unknown GPU read8 %08X\n", addr);
     return 0;
 }
 
@@ -252,7 +253,7 @@ u16 GPU2D::Read16(u32 addr)
     case 0x06C: return MasterBrightness;
     }
 
-    printf("unknown GPU read16 %08X\n", addr);
+    Platform::LogMessage("unknown GPU read16 %08X\n", addr);
     return 0;
 }
 
@@ -371,7 +372,7 @@ void GPU2D::Write8(u32 addr, u8 val)
         return;
     }
 
-    printf("unknown GPU write8 %08X %02X\n", addr, val);
+    Platform::LogMessage("unknown GPU write8 %08X %02X\n", addr, val);
 }
 
 void GPU2D::Write16(u32 addr, u16 val)
@@ -516,7 +517,7 @@ void GPU2D::Write16(u32 addr, u16 val)
         return;
     }
 
-    //printf("unknown GPU write16 %08X %04X\n", addr, val);
+    //Platform::LogMessage("unknown GPU write16 %08X %04X\n", addr, val);
 }
 
 void GPU2D::Write32(u32 addr, u32 val)

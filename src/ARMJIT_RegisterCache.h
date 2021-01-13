@@ -2,6 +2,7 @@
 #define ARMJIT_REGCACHE_H
 
 #include "ARMJIT.h"
+#include "Platform.h"
 
 // TODO: replace this in the future
 #include "dolphin/BitSet.h"
@@ -61,7 +62,7 @@ public:
             }
         }
 
-        printf("this is a JIT bug! LoadRegister failed\n");
+        Platform::LogMessage("this is a JIT bug! LoadRegister failed\n");
         abort();
     }
 

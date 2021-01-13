@@ -152,7 +152,7 @@ void CheatsDialog::on_btnNewARCode_clicked()
     }
     else
     {
-        printf("what?? :(\n");
+        Platform::LogMessage("what?? :(\n");
         return;
     }
 
