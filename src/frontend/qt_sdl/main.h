@@ -80,6 +80,10 @@ signals:
 
     void swapScreensToggle();
 
+    void hkCursorPress();
+    void hkCursorRelease();
+    void hkCursorMove(bool pressed);
+
 private:
     volatile int EmuStatus;
     int PrevEmuStatus;
@@ -260,6 +264,10 @@ private slots:
     void onUpdateVideoSettings(bool glchange);
     
     void onFullscreenToggled();
+
+    void onCursorPress();
+    void onCursorRelease();
+    void onCursorMove(bool pressed);
 
 private:
     QList<QString> recentFileList;
