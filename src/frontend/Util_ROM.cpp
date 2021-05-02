@@ -302,6 +302,7 @@ int LoadBIOS()
 
 int LoadROM(const u8 *romdata, u32 romlength, const char *archivefilename, const char *romfilename, const char *sramfilename, int slot)
 {
+    printf("Loading ROM...\n");
     int res;
     bool directboot = Config::DirectBoot != 0;
 

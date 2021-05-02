@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2021 Arisotura, Raphaël Zumer
+    Copyright 2016-2021 Arisotura, Raphaël Zumer, BueniaDev
 
     This file is part of melonDS.
 
@@ -32,6 +32,7 @@ public:
     CartCommon();
     virtual ~CartCommon();
 
+    virtual bool isAddon();
     virtual void DoSavestate(Savestate* file);
 
     virtual void LoadSave(const char* path, u32 type);
@@ -53,6 +54,7 @@ public:
     CartGame(u8* rom, u32 len);
     virtual ~CartGame() override;
 
+    virtual bool isAddon() override;
     virtual void DoSavestate(Savestate* file) override;
 
     virtual void LoadSave(const char* path, u32 type) override;
@@ -136,11 +138,94 @@ private:
     u8 LightLevel;
 };
 
+class CartAddon : public CartCommon
+{
+public:
+    CartAddon();
+    virtual ~CartAddon() override;
+
+    virtual bool isAddon() override;
+};
+
+
+// CartAddonRumblePak -- DS Rumble Pak addon
+class CartAddonRumblePak : public CartAddon
+{
+public:
+    CartAddonRumblePak();
+    virtual ~CartAddonRumblePak() override;
+
+    virtual u16 ROMRead(u32 addr) override;
+    virtual void ROMWrite(u32 addr, u16 val) override;
+
+private:
+    u16 RumbleState = 0;
+};
+
+// CartAddonGuitarGrip -- Guitar Grip addon (used by the Guitar Hero: On Tour titles)
+class CartAddonGuitarGrip : public CartAddon
+{
+public:
+    CartAddonGuitarGrip();
+    virtual ~CartAddonGuitarGrip() override;
+
+    virtual int SetInput(int num, bool pressed) override;
+
+    virtual u16 ROMRead(u32 addr) override;
+    virtual u8 SRAMRead(u32 addr) override;
+
+private:
+    u8 GuitarKeyStatus = 0;
+
+    u8 KeyMasks[4] = {
+	0x40, 0x20, 0x10, 0x08
+    };
+};
+
+// CartAddonMemExpansionPak -- Memory Expansion Pak addon (used by the DS Browser cart)
+class CartAddonMemExpansionPak : public CartAddon
+{
+public:
+    CartAddonMemExpansionPak();
+    virtual ~CartAddonMemExpansionPak() override;
+
+    virtual void DoSavestate(Savestate* file) override;
+
+    virtual u16 ROMRead(u32 addr) override;
+    virtual void ROMWrite(u32 addr, u16 val) override;
+
+    virtual u8 SRAMRead(u32 addr) override;
+
+private:
+    u8 MemPakHeader[16] =
+    {
+	0xFF, 0xFF, 0x96, 0x00,
+	0x00, 0x24, 0x24, 0x24,
+	0xFF, 0xFF, 0xFF, 0xFF,
+	0xFF, 0xFF, 0xFF, 0x7F,
+    };
+
+    u8 MemPakMemory[0x800000];
+    bool MemPakRAMLock = false;
+};
+
 // possible inputs for GBA carts that might accept user input
 enum
 {
     Input_SolarSensorDown = 0,
     Input_SolarSensorUp,
+    Input_GuitarGripGreen,
+    Input_GuitarGripRed,
+    Input_GuitarGripYellow,
+    Input_GuitarGripBlue,
+};
+
+enum
+{
+    Slot2_AddonNone = 0,
+    Slot2_AddonRumblePak,
+    Slot2_AddonGuitarGrip,
+    Slot2_AddonMemExpansionPak,
 };
 
 extern bool CartInserted;
@@ -156,6 +241,7 @@ void Eject();
 void DoSavestate(Savestate* file);
 bool LoadROM(const char* path, const char* sram);
 bool LoadROM(const u8* romdata, u32 filelength, const char *sram);
+bool LoadSlot2Addon(int index);
 void RelocateSave(const char* path, bool write);
 
 // TODO: make more flexible, support nonbinary inputs

@@ -884,6 +884,19 @@ bool LoadGBAROM(const u8* romdata, u32 filelength, const char *filename, const c
     }
 }
 
+bool LoadSlot2Addon(int index)
+{
+    if (GBACart::LoadSlot2Addon(index))
+    {
+	return true;
+    }
+    else
+    {
+	printf("Failed to load slot 2 addon\n");
+	return false;
+    }
+}
+
 void LoadBIOS()
 {
     Reset();

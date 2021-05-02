@@ -62,6 +62,7 @@ int ShowOSD;
 
 int ConsoleType;
 int DirectBoot;
+int Slot2Addon;
 
 int SocketBindAnyAddr;
 char LANDevice[128];
@@ -124,6 +125,10 @@ ConfigEntry PlatformConfigFile[] =
     {"HKKey_SwapScreens",         0, &HKKeyMapping[HK_SwapScreens],         -1, NULL, 0},
     {"HKKey_SolarSensorDecrease", 0, &HKKeyMapping[HK_SolarSensorDecrease], -1, NULL, 0},
     {"HKKey_SolarSensorIncrease", 0, &HKKeyMapping[HK_SolarSensorIncrease], -1, NULL, 0},
+    {"HKKey_GuitarKeyGreen",      0, &HKKeyMapping[HK_GuitarKeyGreen],      -1, NULL, 0},
+    {"HKKey_GuitarKeyRed",        0, &HKKeyMapping[HK_GuitarKeyRed],        -1, NULL, 0},
+    {"HKKey_GuitarKeyYellow",     0, &HKKeyMapping[HK_GuitarKeyYellow],     -1, NULL, 0},
+    {"HKKey_GuitarKeyBlue",       0, &HKKeyMapping[HK_GuitarKeyBlue],       -1, NULL, 0},
 
     {"HKJoy_Lid",                 0, &HKJoyMapping[HK_Lid],                 -1, NULL, 0},
     {"HKJoy_Mic",                 0, &HKJoyMapping[HK_Mic],                 -1, NULL, 0},
@@ -135,6 +140,10 @@ ConfigEntry PlatformConfigFile[] =
     {"HKJoy_SwapScreens",         0, &HKJoyMapping[HK_SwapScreens],         -1, NULL, 0},
     {"HKJoy_SolarSensorDecrease", 0, &HKJoyMapping[HK_SolarSensorDecrease], -1, NULL, 0},
     {"HKJoy_SolarSensorIncrease", 0, &HKJoyMapping[HK_SolarSensorIncrease], -1, NULL, 0},
+    {"HKJoy_GuitarKeyGreen",      0, &HKJoyMapping[HK_GuitarKeyGreen],      -1, NULL, 0},
+    {"HKJoy_GuitarKeyRed",        0, &HKJoyMapping[HK_GuitarKeyRed],        -1, NULL, 0},
+    {"HKJoy_GuitarKeyYellow",     0, &HKJoyMapping[HK_GuitarKeyYellow],     -1, NULL, 0},
+    {"HKJoy_GuitarKeyBlue",       0, &HKJoyMapping[HK_GuitarKeyBlue],       -1, NULL, 0},
 
     {"JoystickID", 0, &JoystickID, 0, NULL, 0},
 
@@ -168,6 +177,7 @@ ConfigEntry PlatformConfigFile[] =
 
     {"ConsoleType", 0, &ConsoleType, 0, NULL, 0},
     {"DirectBoot", 0, &DirectBoot, 1, NULL, 0},
+    {"Slot2Addon", 0, &Slot2Addon, 0, NULL, 0},
 
     {"SockBindAnyAddr", 0, &SocketBindAnyAddr, 0, NULL, 0},
     {"LANDevice", 1, LANDevice, 0, "", 127},

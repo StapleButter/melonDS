@@ -48,11 +48,15 @@
 #include <QSemaphore>
 #include <QMutex>
 #include <QOpenGLContext>
+#include <QKeyEvent>
+#include <SDL2/SDL.h>
 
 #include "Platform.h"
 #include "PlatformConfig.h"
 #include "LAN_Socket.h"
 #include "LAN_PCap.h"
+#include "Input.h"
+
 #include <string>
 
 #ifndef INVALID_SOCKET
@@ -434,6 +438,25 @@ int LAN_RecvPacket(u8* data)
         return LAN_PCap::RecvPacket(data);
     else
         return LAN_Socket::RecvPacket(data);
+}
+
+void StartRumble()
+{
+    if (Input::Haptic != nullptr)
+    {
+    	// TODO: Testing needed as to how long each "vibration"
+    	// of the Rumble Pak motor lasts
+    	// For now, we just run it for 48 ms
+        SDL_HapticRumblePlay(Input::Haptic, 1.0, 48);
+    }
+}
+
+void StopRumble()
+{
+    if (Input::Haptic != nullptr)
+    {
+        SDL_HapticRumbleStop(Input::Haptic);
+    }
 }
 
 void Sleep(u64 usecs)
