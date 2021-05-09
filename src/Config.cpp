@@ -119,7 +119,9 @@ void Load()
     char entryval[1024];
     while (!feof(f))
     {
-        fgets(linebuf, 1024, f);
+        if (fgets(linebuf, 1024, f) == nullptr)
+            break;
+
         int ret = sscanf(linebuf, "%31[A-Za-z_0-9]=%[^\t\r\n]", entryname, entryval);
         entryname[31] = '\0';
         if (ret < 2) continue;
@@ -171,9 +173,9 @@ void Save()
         }
 
         if (entry->Type == 0)
-            fprintf(f, "%s=%d\n", entry->Name, *(int*)entry->Value);
+            fprintf(f, "%s=%d\r\n", entry->Name, *(int*)entry->Value);
         else
-            fprintf(f, "%s=%s\n", entry->Name, (char*)entry->Value);
+            fprintf(f, "%s=%s\r\n", entry->Name, (char*)entry->Value);
 
         entry++;
     }
