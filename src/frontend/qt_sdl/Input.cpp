@@ -28,7 +28,7 @@ namespace Input
 
 int JoystickID;
 SDL_Joystick* Joystick = nullptr;
-SDL_Haptic *Haptic = nullptr;
+SDL_Haptic* Haptic = nullptr;
 
 u32 KeyInputMask, JoyInputMask;
 u32 KeyHotkeyMask, JoyHotkeyMask;
