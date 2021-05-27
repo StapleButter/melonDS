@@ -33,6 +33,11 @@ enum
     HK_SwapScreens,
     HK_SolarSensorDecrease,
     HK_SolarSensorIncrease,
+    HK_CursorLeft,
+    HK_CursorRight,
+    HK_CursorUp,
+    HK_CursorDown,
+    HK_CursorPress,
     HK_MAX
 };
 
@@ -97,6 +102,9 @@ extern int EnableCheats;
 extern int MouseHide;
 extern int MouseHideSeconds;
 extern int PauseLostFocus;
+
+extern int EnableCursor;
+extern int CursorSpeed;
 
 }
 

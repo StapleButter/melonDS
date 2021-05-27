@@ -86,6 +86,9 @@ int PauseLostFocus;
 
 bool EnableJIT;
 
+int EnableCursor;
+int CursorSpeed;
+
 ConfigEntry PlatformConfigFile[] =
 {
     {"Key_A",      0, &KeyMapping[0],  -1, NULL, 0},
@@ -124,6 +127,11 @@ ConfigEntry PlatformConfigFile[] =
     {"HKKey_SwapScreens",         0, &HKKeyMapping[HK_SwapScreens],         -1, NULL, 0},
     {"HKKey_SolarSensorDecrease", 0, &HKKeyMapping[HK_SolarSensorDecrease], -1, NULL, 0},
     {"HKKey_SolarSensorIncrease", 0, &HKKeyMapping[HK_SolarSensorIncrease], -1, NULL, 0},
+    {"HKKey_CursorLeft",          0, &HKKeyMapping[HK_CursorLeft],          -1, NULL, 0},
+    {"HKKey_CursorRight",         0, &HKKeyMapping[HK_CursorRight],         -1, NULL, 0},
+    {"HKKey_CursorUp",            0, &HKKeyMapping[HK_CursorUp],            -1, NULL, 0},
+    {"HKKey_CursorDown",          0, &HKKeyMapping[HK_CursorDown],          -1, NULL, 0},
+    {"HKKey_CursorPress",         0, &HKKeyMapping[HK_CursorPress],         -1, NULL, 0},
 
     {"HKJoy_Lid",                 0, &HKJoyMapping[HK_Lid],                 -1, NULL, 0},
     {"HKJoy_Mic",                 0, &HKJoyMapping[HK_Mic],                 -1, NULL, 0},
@@ -135,6 +143,14 @@ ConfigEntry PlatformConfigFile[] =
     {"HKJoy_SwapScreens",         0, &HKJoyMapping[HK_SwapScreens],         -1, NULL, 0},
     {"HKJoy_SolarSensorDecrease", 0, &HKJoyMapping[HK_SolarSensorDecrease], -1, NULL, 0},
     {"HKJoy_SolarSensorIncrease", 0, &HKJoyMapping[HK_SolarSensorIncrease], -1, NULL, 0},
+    {"HKJoy_CursorLeft",          0, &HKJoyMapping[HK_CursorLeft],          -1, NULL, 0},
+    {"HKJoy_CursorRight",         0, &HKJoyMapping[HK_CursorRight],         -1, NULL, 0},
+    {"HKJoy_CursorUp",            0, &HKJoyMapping[HK_CursorUp],            -1, NULL, 0},
+    {"HKJoy_CursorDown",          0, &HKJoyMapping[HK_CursorDown],          -1, NULL, 0},
+    {"HKJoy_CursorPress",         0, &HKJoyMapping[HK_CursorPress],         -1, NULL, 0},
+
+    {"EnableCursor", 0, &EnableCursor, 0, NULL, 0},
+    {"CursorSpeed", 0, &CursorSpeed, 5, NULL, 0},
 
     {"JoystickID", 0, &JoystickID, 0, NULL, 0},
 

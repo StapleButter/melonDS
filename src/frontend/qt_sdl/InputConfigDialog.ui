@@ -37,6 +37,11 @@
        <string>General hotkeys</string>
       </attribute>
      </widget>
+     <widget class="QWidget" name="tabHotkeysCursor">
+      <attribute name="title">
+       <string>Cursor hotkeys</string>
+      </attribute>
+     </widget>
     </widget>
    </item>
    <item>
