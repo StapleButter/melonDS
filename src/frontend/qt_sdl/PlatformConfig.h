@@ -38,6 +38,7 @@ enum
     HK_GuitarKeyRed,
     HK_GuitarKeyYellow,
     HK_GuitarKeyBlue,
+    HK_FrameStep,
     HK_MAX
 };
 

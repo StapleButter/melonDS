@@ -60,6 +60,7 @@ const int hk_general[] =
 {
     HK_Pause,
     HK_Reset,
+    HK_FrameStep,
     HK_FastForward,
     HK_FastForwardToggle,
     HK_FullscreenToggle,
@@ -72,6 +73,7 @@ const char* hk_general_labels[] =
 {
     "Pause/resume",
     "Reset",
+    "Frame step",
     "Fast forward",
     "Toggle FPS limit",
     "Toggle Fullscreen",
