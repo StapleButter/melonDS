@@ -58,7 +58,7 @@ CartCommon::~CartCommon()
 {
 }
 
-bool CartCommon::isAddon()
+bool CartCommon::IsAddon()
 {
     return false;
 }
@@ -120,7 +120,7 @@ CartGame::~CartGame()
     if (SRAM) delete[] SRAM;
 }
 
-bool CartGame::isAddon()
+bool CartGame::IsAddon()
 {
     return false;
 }
@@ -627,7 +627,7 @@ CartAddon::~CartAddon()
 
 }
 
-bool CartAddon::isAddon()
+bool CartAddon::IsAddon()
 {
     return true;
 }
@@ -833,7 +833,7 @@ void DoSavestate(Savestate* file)
     // do the rest of the savestate without ejecting the cart
     if (Cart)
     {
-	if (Cart->isAddon())
+	if (Cart->IsAddon())
 	{
 	    Cart->DoSavestate(file);
 	    return;

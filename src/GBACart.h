@@ -32,7 +32,7 @@ public:
     CartCommon();
     virtual ~CartCommon();
 
-    virtual bool isAddon();
+    virtual bool IsAddon();
     virtual void DoSavestate(Savestate* file);
 
     virtual void LoadSave(const char* path, u32 type);
@@ -54,7 +54,7 @@ public:
     CartGame(u8* rom, u32 len);
     virtual ~CartGame() override;
 
-    virtual bool isAddon() override;
+    virtual bool IsAddon() override;
     virtual void DoSavestate(Savestate* file) override;
 
     virtual void LoadSave(const char* path, u32 type) override;
@@ -144,7 +144,7 @@ public:
     CartAddon();
     virtual ~CartAddon() override;
 
-    virtual bool isAddon() override;
+    virtual bool IsAddon() override;
 };
 
 
@@ -177,8 +177,9 @@ public:
 private:
     u8 GuitarKeyStatus = 0;
 
-    u8 KeyMasks[4] = {
-	0x40, 0x20, 0x10, 0x08
+    u8 KeyMasks[4] =
+    {
+        0x40, 0x20, 0x10, 0x08
     };
 };
 
@@ -199,10 +200,10 @@ public:
 private:
     u8 MemPakHeader[16] =
     {
-	0xFF, 0xFF, 0x96, 0x00,
-	0x00, 0x24, 0x24, 0x24,
-	0xFF, 0xFF, 0xFF, 0xFF,
-	0xFF, 0xFF, 0xFF, 0x7F,
+        0xFF, 0xFF, 0x96, 0x00,
+        0x00, 0x24, 0x24, 0x24,
+        0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0x7F,
     };
 
     u8 MemPakMemory[0x800000];

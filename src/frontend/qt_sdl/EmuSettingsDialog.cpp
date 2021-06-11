@@ -166,7 +166,7 @@ void EmuSettingsDialog::done(int r)
         std::string dsiSDPath = ui->txtDSiSDPath->text().toStdString();
 
         if (consoleType != Config::ConsoleType
-	    || chosenAddon != Config::Slot2Addon
+            || chosenAddon != Config::Slot2Addon
             || directBoot != Config::DirectBoot
 #ifdef JIT_ENABLED
             || jitEnable != Config::JIT_Enable
