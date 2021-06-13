@@ -27,8 +27,8 @@ jobs:
           update: true
 
     - name: Install dependencies
-      run: pacman -Sq --noconfirm git make mingw-w64-x86_64-{cmake,mesa,SDL2,qt5-static,libslirp,libarchive,libepoxy,toolchain}
-  
+      run: pacman -Sq --noconfirm git make mingw-w64-x86_64-{cmake,mesa,SDL2,qt5-static,libslirp,libarchive,libepoxy,curl,nlohmann-json,toolchain}
+
     - name: Create build environment
       working-directory: ${{runner.workspace}}
       run: mkdir build
@@ -43,5 +43,5 @@ jobs:
 
     - uses: actions/upload-artifact@v1
       with:
-        name: melonDS
+        name: melonDS-win-x86_64
         path: ${{runner.workspace}}\build\melonDS.exe

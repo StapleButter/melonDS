@@ -19,7 +19,7 @@ jobs:
       run: |
         sudo rm -f /etc/apt/sources.list.d/dotnetdev.list /etc/apt/sources.list.d/microsoft-prod.list
         sudo apt update
-        sudo apt install cmake libcurl4-gnutls-dev libpcap0.8-dev libsdl2-dev qt5-default libslirp0 libslirp-dev libarchive-dev libepoxy-dev --allow-downgrades
+        sudo apt install cmake libcurl4-gnutls-dev libpcap0.8-dev libsdl2-dev qt5-default libslirp0 libslirp-dev libarchive-dev libepoxy-dev nlohmann-json3-dev --allow-downgrades
     - name: Create build environment
       run: mkdir ${{runner.workspace}}/build
     - name: Configure
@@ -33,5 +33,5 @@ jobs:
         cp melonDS dist
     - uses: actions/upload-artifact@v1
       with:
-        name: melonDS
+        name: melonDS-ubuntu-x86_64
         path: ${{runner.workspace}}/build/dist

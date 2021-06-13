@@ -28,6 +28,7 @@ SET(SOURCES_QT_SDL
     ../Util_Audio.cpp
     ../FrontendUtil.h
     ../mic_blow.h
+    ../Updater.hpp
 
     ../../../melon.qrc
 )
@@ -73,6 +74,7 @@ pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(SLIRP REQUIRED slirp)
 pkg_check_modules(LIBARCHIVE REQUIRED libarchive)
 add_compile_definitions(ARCHIVE_SUPPORT_ENABLED)
+pkg_check_modules(LIBCURL REQUIRED libcurl)
 
 if (WIN32 AND (CMAKE_BUILD_TYPE STREQUAL Release))
     add_executable(melonDS WIN32 ${SOURCES_QT_SDL})
@@ -82,9 +84,8 @@ endif()
 
 target_link_libraries(melonDS ${CMAKE_THREAD_LIBS_INIT})
 
-target_include_directories(melonDS PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2_PREFIX}/include ${SLIRP_INCLUDE_DIRS} ${LIBARCHIVE_INCLUDE_DIRS})
-target_link_directories(melonDS PRIVATE ${SDL2_LIBRARY_DIRS} ${SLIRP_LIBRARY_DIRS})
-target_link_directories(melonDS PRIVATE ${LIBARCHIVE_LIBRARY_DIRS})
+target_include_directories(melonDS PRIVATE ${SDL2_INCLUDE_DIRS} ${SDL2_PREFIX}/include ${SLIRP_INCLUDE_DIRS} ${LIBARCHIVE_INCLUDE_DIRS} ${LIBCURL_INCLUDE_DIRS})
+target_link_directories(melonDS PRIVATE ${SDL2_LIBRARY_DIRS} ${SLIRP_LIBRARY_DIRS} ${LIBARCHIVE_LIBRARY_DIRS} ${LIBCURL_LIBRARY_DIRS})
 
 target_include_directories(melonDS PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(melonDS PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
@@ -92,9 +93,9 @@ target_include_directories(melonDS PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../..")
 target_link_libraries(melonDS core)
 
 if (BUILD_STATIC)
-    target_link_libraries(melonDS -static ${SDL2_STATIC_LIBRARIES} ${SLIRP_STATIC_LIBRARIES} ${LIBARCHIVE_STATIC_LIBRARIES})
+    target_link_libraries(melonDS -static ${SDL2_STATIC_LIBRARIES} ${SLIRP_STATIC_LIBRARIES} ${LIBARCHIVE_STATIC_LIBRARIES} ${LIBCURL_STATIC_LIBRARIES})
 else()
-    target_link_libraries(melonDS ${SDL2_LIBRARIES} ${SLIRP_LIBRARIES} ${LIBARCHIVE_LIBRARIES})
+    target_link_libraries(melonDS ${SDL2_LIBRARIES} ${SLIRP_LIBRARIES} ${LIBARCHIVE_LIBRARIES} ${LIBCURL_LIBRARIES})
 endif()
 
 if (NOT Iconv_IS_BUILT_IN)

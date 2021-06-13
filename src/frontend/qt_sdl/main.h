@@ -261,6 +261,8 @@ private slots:
     void onChangeShowOSD(bool checked);
     void onChangeLimitFramerate(bool checked);
     void onChangeAudioSync(bool checked);
+    
+    void onCheckForUpdates();
 
     void onTitleUpdate(QString title);
 

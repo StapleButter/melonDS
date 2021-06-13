@@ -64,6 +64,8 @@
 #include "FrontendUtil.h"
 #include "OSD.h"
 
+#include "Updater.hpp"
+
 #include "NDS.h"
 #include "GBACart.h"
 #include "GPU.h"
@@ -1502,6 +1504,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent)
         actAudioSync = menu->addAction("Audio sync");
         actAudioSync->setCheckable(true);
         connect(actAudioSync, &QAction::triggered, this, &MainWindow::onChangeAudioSync);
+		
+        menu->addSeparator();
+	    actEmuSettings = menu->addAction("Check for updates");
+        connect(actEmuSettings, &QAction::triggered, this, &MainWindow::onCheckForUpdates);
     }
     setMenuBar(menubar);
 
@@ -2511,6 +2517,30 @@ void MainWindow::onChangeAudioSync(bool checked)
     Config::AudioSync = checked?1:0;
 }
 
+void MainWindow::onCheckForUpdates()
+{
+    emuThread->emuPause();
+    QString githubKey = QInputDialog::getText(this, "melonDS", "Enter your GitHub Personal Access Token. It needs to have the 'public_repo' scope.");
+    std::vector<std::string> updateCheck = Updater::checkForUpdates("1", githubKey.toStdString().c_str()); //1 is just a dummy version
+    if (updateCheck[0] == "Err")
+    {
+        QMessageBox::critical(this, "melonDS", QString::fromStdString(std::string(updateCheck[1])));
+    }
+    else if (updateCheck[0] == "N")
+    {
+        QMessageBox::information(this, "melonDS", "You are already on the latest version");
+    }
+    else if (updateCheck[0] == "Y")
+    {
+        if (QMessageBox::question(this, "melonDS", 
+            QString::fromStdString("An update is available. The commit message is " + updateCheck[1] + " Do you want to install it now?"), 
+            QMessageBox::Yes|QMessageBox::No) == QMessageBox::Yes)
+        {
+            Updater::installUpdate();
+        }
+    }
+    emuThread->emuUnpause();
+}
 
 void MainWindow::onTitleUpdate(QString title)
 {
