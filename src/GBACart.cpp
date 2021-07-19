@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2021 Arisotura, Raphaël Zumer
+    Copyright 2016-2021 Arisotura, Raphaël Zumer, BueniaDev
 
     This file is part of melonDS.
 
@@ -58,6 +58,11 @@ CartCommon::~CartCommon()
 {
 }
 
+bool CartCommon::IsAddon()
+{
+    return false;
+}
+
 void CartCommon::DoSavestate(Savestate* file)
 {
     file->Section("GBCS");
@@ -113,6 +118,11 @@ CartGame::~CartGame()
 {
     if (SRAMFile) fclose(SRAMFile);
     if (SRAM) delete[] SRAM;
+}
+
+bool CartGame::IsAddon()
+{
+    return false;
 }
 
 void CartGame::DoSavestate(Savestate* file)
@@ -607,6 +617,169 @@ void CartGameSolarSensor::ProcessGPIO()
     }
 }
 
+CartAddon::CartAddon()
+{
+
+}
+
+CartAddon::~CartAddon()
+{
+
+}
+
+bool CartAddon::IsAddon()
+{
+    return true;
+}
+
+CartAddonRumblePak::CartAddonRumblePak()
+{
+    RumbleState = 0;
+}
+
+CartAddonRumblePak::~CartAddonRumblePak()
+{
+
+}
+
+u16 CartAddonRumblePak::ROMRead(u32 addr)
+{
+    // GBATEK: For detection, AD1 seems to be pulled low when reading from it... (while) the other AD lines are open bus (containing the halfword address)...
+    // GBATEK with bit 6 set is based on empirical data...
+    // This should allow commercial games to properly detect the Rumble Pak.
+    // Credit to rzumer for coming up with this algorithm...
+
+    u16 lodata = ((addr | 0x40) & 0xFD);
+    return (addr & 1) ? addr : lodata;
+}
+
+void CartAddonRumblePak::ROMWrite(u32 addr, u16 val)
+{
+    // Ported from GBE+...
+    if (addr == 0x8000000 || addr == 0x8001000 && RumbleState != val)
+    {
+        Platform::StopRumble();
+        RumbleState = val;
+        Platform::StartRumble();
+    }
+}
+
+// Code ported from Desmume
+CartAddonGuitarGrip::CartAddonGuitarGrip()
+{
+    GuitarKeyStatus = 0;
+}
+
+CartAddonGuitarGrip::~CartAddonGuitarGrip()
+{
+
+}
+
+int CartAddonGuitarGrip::SetInput(int num, bool pressed)
+{
+    u8 mask = 0;
+    switch (num)
+    {
+	case Input_GuitarGripGreen: mask = KeyMasks[0]; break;
+	case Input_GuitarGripRed: mask = KeyMasks[1]; break;
+	case Input_GuitarGripYellow: mask = KeyMasks[2]; break;
+	case Input_GuitarGripBlue: mask = KeyMasks[3]; break;
+	default: break;
+    }
+
+    if (mask == 0) return -1;
+
+    if (pressed)
+    {
+	GuitarKeyStatus |= mask;
+    }
+    else
+    {
+	GuitarKeyStatus &= ~mask;
+    }
+
+    return static_cast<int>(mask);
+}
+
+u16 CartAddonGuitarGrip::ROMRead(u32 addr)
+{
+    return 0xF9FF;
+}
+
+u8 CartAddonGuitarGrip::SRAMRead(u32 addr)
+{
+    if (addr == 0xA000000)
+    {
+        return ~GuitarKeyStatus;
+    }
+
+    return 0xFF;
+}
+
+// Code ported from Desmume (with a few minor tweaks)
+CartAddonMemExpansionPak::CartAddonMemExpansionPak()
+{
+    memset(MemPakMemory, 0xFF, 0x800000);
+    MemPakRAMLock = true;
+}
+
+CartAddonMemExpansionPak::~CartAddonMemExpansionPak()
+{
+
+}
+
+void CartAddonMemExpansionPak::DoSavestate(Savestate *file)
+{
+    CartCommon::DoSavestate(file);
+    file->Bool32(&MemPakRAMLock);
+    file->VarArray(MemPakMemory, 0x800000);
+}
+
+u16 CartAddonMemExpansionPak::ROMRead(u32 addr)
+{
+    if ((addr >= 0x80000B0) && (addr < 0x80000C0))
+    {
+	return *(u16*)&MemPakHeader[(addr & 0xF)];
+    }
+    else if (addr == 0x801FFFC)
+    {
+	return 0x7FFF;
+    }
+    else if (addr == 0x8240002)
+    {
+	return 0x0000;
+    }
+    else if ((addr >= 0x9000000) && (addr < 0x9800000))
+    {
+	return *(u16*)&MemPakMemory[(addr & 0xFFFFFF)];
+    }
+
+    return 0xFFFF;
+}
+
+void CartAddonMemExpansionPak::ROMWrite(u32 addr, u16 val)
+{
+    if (addr == 0x8240000)
+    {
+	MemPakRAMLock = !(val & 0x1);
+	return;
+    }
+
+    if (MemPakRAMLock == true)
+    {
+	return;
+    }
+    
+    if ((addr >= 0x9000000) && (addr < 0x9800000))
+    {
+	*(u16*)&MemPakMemory[(addr & 0xFFFFFF)] = val;
+    }
+}
+
+u8 CartAddonMemExpansionPak::SRAMRead(u32 addr)
+{
+    return 0xFF;
+}
 
 bool Init()
 {
@@ -655,6 +828,17 @@ void Eject()
 void DoSavestate(Savestate* file)
 {
     file->Section("GBAC"); // Game Boy Advance Cartridge
+
+    // If the cart is a Slot-2 addon,
+    // do the rest of the savestate without ejecting the cart
+    if (Cart)
+    {
+	if (Cart->IsAddon())
+	{
+	    Cart->DoSavestate(file);
+	    return;
+	}
+    }
 
     // logic mostly copied from NDSCart
 
@@ -780,6 +964,20 @@ bool LoadROM(const u8* romdata, u32 filelength, const char *sram)
     memcpy(CartROM, romdata, filelength);
 
     LoadROMCommon(sram);
+
+    return true;
+}
+
+bool LoadSlot2Addon(int index)
+{
+    Eject(); // Eject the current cart/addon in Slot 2
+    switch (index)
+    {
+	case Slot2_AddonRumblePak: Cart = new CartAddonRumblePak(); break;
+	case Slot2_AddonGuitarGrip: Cart = new CartAddonGuitarGrip(); break;
+	case Slot2_AddonMemExpansionPak: Cart = new CartAddonMemExpansionPak(); break;
+	default: break;
+    }
 
     return true;
 }

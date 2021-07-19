@@ -407,6 +407,58 @@ void EmuThread::run()
             }
         }
 
+	if (Input::HotkeyPressed(HK_GuitarKeyGreen) || Input::HotkeyReleased(HK_GuitarKeyGreen))
+	{
+	    bool ispressed = Input::HotkeyPressed(HK_GuitarKeyGreen);
+	    int level = GBACart::SetInput(GBACart::Input_GuitarGripGreen, ispressed);
+
+	    if ((level != -1) && ispressed)
+	    {
+		char msg[64];
+		sprintf(msg, "Green guitar key pressed");
+		OSD::AddMessage(0, msg);
+	    }
+	}
+
+	if (Input::HotkeyPressed(HK_GuitarKeyRed) || Input::HotkeyReleased(HK_GuitarKeyRed))
+	{
+	    bool ispressed = Input::HotkeyPressed(HK_GuitarKeyRed);
+	    int level = GBACart::SetInput(GBACart::Input_GuitarGripRed, ispressed);
+
+	    if ((level != -1) && ispressed)
+	    {
+		char msg[64];
+		sprintf(msg, "Red guitar key pressed");
+		OSD::AddMessage(0, msg);
+	    }
+	}
+
+	if (Input::HotkeyPressed(HK_GuitarKeyYellow) || Input::HotkeyReleased(HK_GuitarKeyYellow))
+	{
+	    bool ispressed = Input::HotkeyPressed(HK_GuitarKeyYellow);
+	    int level = GBACart::SetInput(GBACart::Input_GuitarGripYellow, ispressed);
+
+	    if ((level != -1) && ispressed)
+	    {
+		char msg[64];
+		sprintf(msg, "Yellow guitar key pressed");
+		OSD::AddMessage(0, msg);
+	    }
+	}
+
+	if (Input::HotkeyPressed(HK_GuitarKeyBlue) || Input::HotkeyReleased(HK_GuitarKeyBlue))
+	{
+	    bool ispressed = Input::HotkeyPressed(HK_GuitarKeyBlue);
+	    int level = GBACart::SetInput(GBACart::Input_GuitarGripBlue, ispressed);
+
+	    if ((level != -1) && ispressed)
+	    {
+		char msg[64];
+		sprintf(msg, "Blue guitar key pressed");
+		OSD::AddMessage(0, msg);
+	    }
+	}
+
         if (EmuRunning == 1 || EmuRunning == 3)
         {
             EmuStatus = 1;
@@ -615,6 +667,7 @@ void EmuThread::changeWindowTitle(char* title)
 
 void EmuThread::emuRun()
 {
+    NDS::LoadSlot2Addon(Config::Slot2Addon);
     EmuRunning = 1;
     EmuPause = 0;
     RunningSomething = true;

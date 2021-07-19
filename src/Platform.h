@@ -103,6 +103,8 @@ void LAN_DeInit();
 int LAN_SendPacket(u8* data, int len);
 int LAN_RecvPacket(u8* data);
 
+void StopRumble();
+void StartRumble();
 void Sleep(u64 usecs);
 
 }

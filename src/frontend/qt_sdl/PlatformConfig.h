@@ -20,6 +20,7 @@
 #define PLATFORMCONFIG_H
 
 #include "Config.h"
+#include "SharedConfig.h"
 
 enum
 {
@@ -33,6 +34,10 @@ enum
     HK_SwapScreens,
     HK_SolarSensorDecrease,
     HK_SolarSensorIncrease,
+    HK_GuitarKeyGreen,
+    HK_GuitarKeyRed,
+    HK_GuitarKeyYellow,
+    HK_GuitarKeyBlue,
     HK_FrameStep,
     HK_MAX
 };
@@ -76,14 +81,9 @@ extern int LimitFPS;
 extern int AudioSync;
 extern int ShowOSD;
 
-extern int ConsoleType;
-extern int DirectBoot;
-
 extern int SocketBindAnyAddr;
 extern char LANDevice[128];
 extern int DirectLAN;
-
-extern int SavestateRelocSRAM;
 
 extern int AudioVolume;
 extern int MicInputType;

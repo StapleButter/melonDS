@@ -24,6 +24,7 @@ namespace Config
 
 extern int ConsoleType;
 extern int DirectBoot;
+extern int Slot2Addon;
 extern int SavestateRelocSRAM;
 
 }
